@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { Input } from "../ui/input";
-import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
 
 interface CentralSectionProps {
   className?: string;
 }
 
-const CentralSection = ({ className = "" }: CentralSectionProps) => {
-  const [time, setTime] = useState<string>("00:00");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+const CentralSection = ({ className }: CentralSectionProps) => {
+  const [time, setTime] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
+  // Update the time every second
   useEffect(() => {
-    // Update the time every second
     const updateTime = () => {
       const now = new Date();
-      const hours = now.getHours().toString().padStart(2, "0");
-      const minutes = now.getMinutes().toString().padStart(2, "0");
-      setTime(`${hours}:${minutes}`);
+      // Change to 24-hour format
+      setTime(now.toLocaleTimeString([], { 
+        hour: "2-digit", 
+        minute: "2-digit", 
+        hour12: false // Use 24-hour format
+      }));
     };
 
-    // Initial call to set the time immediately
     updateTime();
-
-    // Set up interval to update time every second
     const intervalId = setInterval(updateTime, 1000);
 
-    // Clean up interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
 
@@ -46,26 +46,36 @@ const CentralSection = ({ className = "" }: CentralSectionProps) => {
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center p-8 bg-background",
+        "flex flex-col items-center justify-center w-full h-full p-6 md:p-10",
         className,
       )}
     >
-      {/* Digital Clock */}
-      <div className="mb-10">
-        <h1 className="text-9xl font-light tracking-tight">{time}</h1>
+      {/* Digital Clock - changed to black and white */}
+      <div className="mb-8 md:mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <h1 className="text-6xl md:text-8xl lg:text-9xl font-light tracking-tight text-foreground dark:text-white">{time}</h1>
       </div>
 
       {/* Search Bar */}
-      <form onSubmit={handleSearchSubmit} className="w-full max-w-md relative">
-        <div className="relative">
+      <form 
+        onSubmit={handleSearchSubmit} 
+        className="w-full max-w-md relative animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150"
+      >
+        <div className="relative group">
           <Input
             type="text"
-            placeholder="Search"
             value={searchQuery}
             onChange={handleSearchChange}
-            className="w-full h-12 pl-10 pr-4 border border-border/30 rounded-full focus:outline-none focus:ring-0 focus:border-primary bg-background/50"
+            placeholder="Search the web..."
+            className="pl-10 pr-12 h-12 rounded-full border-border/50 bg-background/80 backdrop-blur-sm shadow-sm focus-visible:ring-primary"
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Button 
+            type="submit" 
+            size="icon" 
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full opacity-80 group-hover:opacity-100"
+          >
+            <Search className="h-4 w-4" />
+          </Button>
         </div>
       </form>
     </div>

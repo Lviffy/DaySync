@@ -45,7 +45,7 @@ const SettingsButton = ({ darkMode, setDarkMode }: SettingsButtonProps) => {
               variant="outline"
               size="icon"
               onClick={() => setIsOpen(true)}
-              className="rounded-full w-10 h-10 border-none bg-background/50 hover:bg-muted"
+              className="rounded-full w-10 h-10 border-border/40 bg-background/70 hover:bg-accent/70 backdrop-blur-sm"
               aria-label="Settings"
             >
               <Settings className="h-5 w-5" />
@@ -58,30 +58,31 @@ const SettingsButton = ({ darkMode, setDarkMode }: SettingsButtonProps) => {
       </TooltipProvider>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="bg-background border border-border">
+        <DialogContent className="bg-background border-border/50 max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Settings</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">Settings</DialogTitle>
           </DialogHeader>
-          <div className="py-4 space-y-4">
+          <div className="py-6 space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5 flex items-center">
                 {darkMode ? (
-                  <Moon className="mr-2 h-4 w-4" />
+                  <Moon className="mr-2.5 h-4.5 w-4.5 text-primary" />
                 ) : (
-                  <Sun className="mr-2 h-4 w-4" />
+                  <Sun className="mr-2.5 h-4.5 w-4.5 text-primary" />
                 )}
-                <Label htmlFor="dark-mode">Dark Mode</Label>
+                <Label htmlFor="dark-mode" className="text-base">Dark Mode</Label>
               </div>
               <Switch
                 id="dark-mode"
                 checked={darkMode}
                 onCheckedChange={setDarkMode}
+                className="data-[state=checked]:bg-primary"
               />
             </div>
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="notifications">Notifications</Label>
+                <Label htmlFor="notifications" className="text-base">Notifications</Label>
                 <p className="text-sm text-muted-foreground">
                   Enable task reminders
                 </p>
@@ -90,30 +91,28 @@ const SettingsButton = ({ darkMode, setDarkMode }: SettingsButtonProps) => {
                 id="notifications"
                 checked={settings.notifications}
                 onCheckedChange={() => toggleSetting("notifications")}
+                className="data-[state=checked]:bg-primary"
               />
             </div>
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="sound">Sound Effects</Label>
+                <Label htmlFor="sound" className="text-base">Sound Effects</Label>
                 <p className="text-sm text-muted-foreground">
-                  Enable sound effects
+                  Play sounds on actions
                 </p>
               </div>
               <Switch
                 id="sound"
                 checked={settings.sound}
                 onCheckedChange={() => toggleSetting("sound")}
+                className="data-[state=checked]:bg-primary"
               />
             </div>
           </div>
-
           <DialogFooter>
-            <Button
-              onClick={() => setIsOpen(false)}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              Save Changes
+            <Button onClick={() => setIsOpen(false)} className="bg-primary hover:bg-primary/90">
+              Save Settings
             </Button>
           </DialogFooter>
         </DialogContent>

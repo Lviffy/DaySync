@@ -1,6 +1,6 @@
 import React from "react";
-import DashboardLayout from "./Dashboard/DashboardLayout";
-import { Helmet } from "react-helmet";
+import DashboardLayout from "./Dashboard/DashboardLayout.tsx"; // Fixed extension
+import { Helmet } from "react-helmet-async";
 
 const Home = () => {
   return (

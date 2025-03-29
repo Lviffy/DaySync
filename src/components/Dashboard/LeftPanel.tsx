@@ -25,11 +25,7 @@ interface LeftPanelProps {
 
 const LeftPanel = ({
   className,
-  initialLinks = [
-    { id: "1", title: "Gmail", url: "https://gmail.com" },
-    { id: "2", title: "Calendar", url: "https://calendar.google.com" },
-    { id: "3", title: "Drive", url: "https://drive.google.com" },
-  ],
+  initialLinks = [],
 }: LeftPanelProps) => {
   // State for quick links
   const [quickLinks, setQuickLinks] = useState<QuickLink[]>(initialLinks);
@@ -92,11 +88,11 @@ const LeftPanel = ({
     const dayNames = ["S", "M", "T", "W", "T", "F", "S"];
 
     // Add day names
-    dayNames.forEach((day) => {
+    dayNames.forEach((day, index) => {
       days.push(
         <div
-          key={`day-${day}`}
-          className="h-8 flex items-center justify-center text-sm font-medium"
+          key={`dayname-${index}`}
+          className="h-7 w-7 flex items-center justify-center text-xs font-medium"
         >
           {day}
         </div>,
@@ -108,7 +104,7 @@ const LeftPanel = ({
       days.push(
         <div
           key={`empty-${i}`}
-          className="h-8 flex items-center justify-center border border-border/30"
+          className="h-7 w-7 flex items-center justify-center"
         ></div>,
       );
     }
@@ -121,9 +117,9 @@ const LeftPanel = ({
         viewYear === currentDate.getFullYear();
       days.push(
         <div
-          key={`day-${day}`}
+          key={`day-${viewMonth}-${day}`}
           className={cn(
-            "h-8 flex items-center justify-center border border-border/30 text-sm hover:bg-muted cursor-pointer transition-colors",
+            "h-7 w-7 flex items-center justify-center text-xs rounded-full hover:bg-muted/60 cursor-pointer transition-colors",
             isToday && "bg-primary text-primary-foreground hover:bg-primary/90",
           )}
         >
@@ -200,113 +196,86 @@ const LeftPanel = ({
   return (
     <div
       className={cn(
-        "w-full h-full p-4 bg-background flex flex-col gap-6 overflow-auto",
+        "w-full h-full p-3 md:p-5 flex flex-col gap-4 md:gap-6 overflow-auto",
         className,
       )}
     >
       {/* Calendar Widget */}
-      <div className="p-4">
+      <div className="p-4 bg-background/80 rounded-lg shadow-sm border border-border/30 transition-all duration-200 hover:shadow-md">
         <div className="flex justify-between items-center mb-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={prevMonth}
-            className="px-2 h-8"
+            className="px-2 h-7 hover:bg-primary/10 hover:text-primary"
           >
             &lt;
           </Button>
-          <h2 className="text-lg font-medium">
+          <h2 className="text-base md:text-lg font-medium text-foreground/90">
             {monthNames[viewMonth]} {viewYear}
           </h2>
           <Button
             variant="ghost"
             size="sm"
             onClick={nextMonth}
-            className="px-2 h-8"
+            className="px-2 h-7 hover:bg-primary/10 hover:text-primary"
           >
             &gt;
           </Button>
         </div>
-        <div className="grid grid-cols-7 gap-1">{generateCalendarDays()}</div>
+
+        <div className="grid grid-cols-7 place-items-center gap-1 max-w-[280px] mx-auto text-sm">
+          {generateCalendarDays()}
+        </div>
       </div>
 
       {/* Quick Links */}
-      <div className="p-4 flex-1">
+      <div className="p-4 bg-background/80 rounded-lg shadow-sm border border-border/30 flex-1 transition-all duration-200 hover:shadow-md">
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-lg font-medium">Quick Links</h2>
+          <h2 className="text-base md:text-lg font-medium text-foreground/90">Quick Links</h2>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsAddLinkOpen(true)}
-            className="h-8 px-2"
+            className="h-7 px-2 hover:bg-primary/10 hover:text-primary"
           >
-            <PlusCircle className="h-4 w-4 mr-1" /> Add
+            <PlusCircle className="h-3.5 w-3.5 mr-1.5" /> Add
           </Button>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
           {quickLinks.map((link) => (
-            <div
+            <a
               key={link.id}
-              className="aspect-square bg-background/50 rounded-md flex flex-col items-center justify-center relative group hover:bg-muted transition-colors cursor-pointer"
-              onClick={() => openLink(link.url)}
+              href={link.url.startsWith("http") ? link.url : `https://${link.url}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center justify-center p-2 rounded-md bg-background/60 hover:bg-primary/5 border border-border/30 transition-all duration-200 group"
             >
-              <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 p-0"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeQuickLink(link.id);
-                  }}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mb-1 text-primary group-hover:bg-primary/20 transition-colors">
+                <LinkIcon className="h-4 w-4" />
               </div>
-              {link.favicon ? (
-                <img
-                  src={link.favicon}
-                  alt={link.title}
-                  className="w-8 h-8 mb-1 rounded-sm object-contain"
-                  onError={(e) => {
-                    // If favicon fails to load, show a fallback icon
-                    e.currentTarget.src =
-                      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='2' y1='12' x2='22' y2='12'%3E%3C/line%3E%3Cpath d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'%3E%3C/path%3E%3C/svg%3E";
-                  }}
-                />
-              ) : (
-                <LinkIcon className="w-8 h-8 mb-1" />
-              )}
-              <span className="text-xs font-medium text-center px-1 truncate w-full">
-                {link.title}
-              </span>
-              {/* External link icon removed for minimalism */}
-            </div>
-          ))}
-
-          {quickLinks.length === 0 && (
-            <div className="col-span-3 py-8 flex flex-col items-center justify-center text-muted-foreground">
-              <LinkIcon className="h-8 w-8 mb-2" />
-              <p className="text-sm">No quick links yet</p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsAddLinkOpen(true)}
-                className="mt-2 border-border/30"
+              <span className="text-xs font-medium text-center line-clamp-1">{link.title}</span>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  removeQuickLink(link.id);
+                }}
+                className="absolute top-0 right-0 w-5 h-5 rounded-full bg-background/80 text-foreground/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
               >
-                <PlusCircle className="h-4 w-4 mr-1" /> Add your first link
-              </Button>
-            </div>
-          )}
+                <X className="h-3 w-3" />
+              </button>
+            </a>
+          ))}
         </div>
       </div>
 
       {/* Add Link Dialog */}
       <Dialog open={isAddLinkOpen} onOpenChange={setIsAddLinkOpen}>
-        <DialogContent className="bg-background border border-border sm:max-w-[400px]">
+        <DialogContent className="bg-background border border-border/50 sm:max-w-[400px]">
           <DialogHeader>
-            <DialogTitle>Add Quick Link</DialogTitle>
+            <DialogTitle className="text-xl">Add Quick Link</DialogTitle>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
@@ -320,7 +289,7 @@ const LeftPanel = ({
                 onChange={(e) =>
                   setNewLink({ ...newLink, title: e.target.value })
                 }
-                className="col-span-3 border-border/30"
+                className="col-span-3 border-border/40"
                 placeholder="Google"
               />
             </div>
@@ -334,7 +303,7 @@ const LeftPanel = ({
                 onChange={(e) =>
                   setNewLink({ ...newLink, url: e.target.value })
                 }
-                className="col-span-3 border-border/30"
+                className="col-span-3 border-border/40"
                 placeholder="google.com"
               />
             </div>
@@ -344,7 +313,7 @@ const LeftPanel = ({
             <Button
               variant="outline"
               onClick={() => setIsAddLinkOpen(false)}
-              className="border-border/30"
+              className="border-border/40"
             >
               Cancel
             </Button>
