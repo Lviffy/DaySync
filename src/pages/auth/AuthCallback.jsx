@@ -9,8 +9,7 @@ export default function AuthCallback() {
     // This effect handles the OAuth callback
     const handleAuthCallback = async () => {
       try {
-        // Get the hash fragment from the URL
-        const hashFragment = window.location.hash;
+        console.log('AuthCallback: Starting authentication process');
         
         // Supabase should automatically handle the token exchange
         const { data, error } = await supabase.auth.getSession();
@@ -19,12 +18,22 @@ export default function AuthCallback() {
           console.error('Auth callback error:', error);
           setMessage('Authentication failed. Please try again.');
         } else if (data?.session) {
+          console.log('AuthCallback: Authentication successful, session found');
           setMessage('Authentication successful! Redirecting...');
+          
           // Redirect to the main page after successful authentication
           setTimeout(() => {
-            // Use current domain origin to ensure proper redirection
-            window.location.href = window.location.origin;
+            // For Vercel deployment specifically use the production URL
+            const redirectUrl = window.location.hostname.includes('vercel.app') 
+              ? 'https://day-sync.vercel.app/' 
+              : window.location.origin;
+              
+            console.log('AuthCallback: Redirecting to', redirectUrl);
+            window.location.href = redirectUrl;
           }, 1500);
+        } else {
+          console.log('AuthCallback: No session found after authentication');
+          setMessage('No session detected. Please try signing in again.');
         }
       } catch (err) {
         console.error('Unexpected error in auth callback:', err);
