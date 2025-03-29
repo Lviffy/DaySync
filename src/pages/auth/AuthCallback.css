@@ -1,0 +1,34 @@
+.auth-callback-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-color: #1e1e2e;
+  color: #cdd6f4;
+}
+
+.auth-callback-message {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 8px;
+  background-color: #313244;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+}
+
+.loading-spinner {
+  margin: 20px auto;
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  border-top-color: #74c7ec;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+} 

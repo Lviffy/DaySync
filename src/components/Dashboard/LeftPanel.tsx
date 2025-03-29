@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -9,13 +9,17 @@ import {
   DialogTitle,
   DialogFooter,
 } from "../ui/dialog";
-import { PlusCircle, Link as LinkIcon, ExternalLink, X } from "lucide-react";
+import { PlusCircle, Link as LinkIcon, ExternalLink, X, Loader2 } from "lucide-react";
+import { useUser } from "../../contexts/UserContext.jsx";
+import { quickLinkService } from "../../services/quickLinkService";
+import { useToast, Toast } from "../ui/toast";
 
 interface QuickLink {
   id: string;
   title: string;
   url: string;
   favicon?: string;
+  user_id?: string;
 }
 
 interface LeftPanelProps {
@@ -34,6 +38,35 @@ const LeftPanel = ({
     title: "",
     url: "",
   });
+  const [loading, setLoading] = useState(false);
+  const { user } = useUser();
+  const [showToast, setShowToast] = useState<{
+    visible: boolean;
+    message: string;
+    type: 'success' | 'error' | 'info';
+  }>({ visible: false, message: '', type: 'info' });
+
+  // Fetch quick links when component mounts or user changes
+  useEffect(() => {
+    if (user) {
+      fetchQuickLinks();
+    }
+  }, [user]);
+
+  // Fetch quick links from Supabase
+  const fetchQuickLinks = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const links = await quickLinkService.fetchQuickLinks(user.id);
+      setQuickLinks(links);
+    } catch (error) {
+      console.error("Error fetching quick links:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Calendar state and functions
   const currentDate = new Date();
@@ -170,30 +203,77 @@ const LeftPanel = ({
   };
 
   // Add new quick link
-  const addQuickLink = () => {
-    if (!newLink.title || !newLink.url) return;
-
-    // Ensure URL has protocol
-    let url = newLink.url;
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-      url = "https://" + url;
+  const addQuickLink = async () => {
+    if (!user || !newLink.title || !newLink.url) {
+      console.log("Cannot add link: missing user, title, or URL", { 
+        hasUser: !!user, 
+        title: newLink.title, 
+        url: newLink.url 
+      });
+      setShowToast({
+        visible: true,
+        message: "Please enter both title and URL",
+        type: "error"
+      });
+      return;
     }
 
-    const link: QuickLink = {
-      id: Date.now().toString(),
-      title: newLink.title,
-      url: url,
-      favicon: getFaviconUrl(url),
-    };
-
-    setQuickLinks([...quickLinks, link]);
-    setNewLink({ title: "", url: "" });
-    setIsAddLinkOpen(false);
+    try {
+      setLoading(true);
+      console.log("About to add quick link with user ID:", user.id);
+      console.log("Link data:", newLink);
+      
+      const link = await quickLinkService.addQuickLink(newLink, user.id);
+      console.log("Link added successfully:", link);
+      
+      setQuickLinks([...quickLinks, link]);
+      setNewLink({ title: "", url: "" });
+      setIsAddLinkOpen(false);
+      setShowToast({
+        visible: true,
+        message: "Quick link added successfully!",
+        type: "success"
+      });
+    } catch (error) {
+      console.error("Error adding quick link:", error);
+      // Get more specific error message
+      let errorMessage = "Failed to add link. Please try again.";
+      
+      if (error instanceof Error) {
+        console.error("Detailed error:", error.message);
+        
+        if (error.message.includes("table") && error.message.includes("exist")) {
+          errorMessage = "Quick links table doesn't exist in the database. Please check Supabase setup.";
+        } else if (error.message.includes("foreign key constraint")) {
+          errorMessage = "User authentication issue. Please try signing out and in again.";
+        } else if (error.message.includes("permission denied")) {
+          errorMessage = "Permission denied. Please check RLS policies in Supabase.";
+        }
+      }
+      
+      setShowToast({
+        visible: true,
+        message: errorMessage,
+        type: "error"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Remove quick link
-  const removeQuickLink = (id: string) => {
-    setQuickLinks(quickLinks.filter((link) => link.id !== id));
+  const removeQuickLink = async (id: string) => {
+    if (!user) return;
+    
+    try {
+      setLoading(true);
+      await quickLinkService.deleteQuickLink(id);
+      setQuickLinks(quickLinks.filter((link) => link.id !== id));
+    } catch (error) {
+      console.error("Error removing quick link:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Open link in new tab
@@ -208,6 +288,16 @@ const LeftPanel = ({
         className,
       )}
     >
+      {/* Toast notification */}
+      {showToast.visible && (
+        <Toast 
+          message={showToast.message}
+          type={showToast.type}
+          duration={3000}
+          onClose={() => setShowToast({ ...showToast, visible: false })}
+        />
+      )}
+
       {/* Calendar Widget */}
       <div className="p-4 bg-background/80 rounded-lg shadow-sm border border-border/30 transition-all duration-200 hover:shadow-md">
         <div className="flex justify-between items-center mb-3">
@@ -246,49 +336,63 @@ const LeftPanel = ({
             size="sm"
             onClick={() => setIsAddLinkOpen(true)}
             className="h-7 px-2 hover:bg-primary/10 hover:text-primary"
+            disabled={!user || loading}
           >
-            <PlusCircle className="h-3.5 w-3.5 mr-1.5" /> Add
+            {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PlusCircle className="h-3.5 w-3.5 mr-1.5" />} 
+            {loading ? "" : "Add"}
           </Button>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
-          {quickLinks.map((link) => (
-            <a
-              key={link.id}
-              href={link.url.startsWith("http") ? link.url : `https://${link.url}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center justify-center p-2 rounded-md bg-background/60 hover:bg-primary/5 border border-border/30 transition-all duration-200 group"
-            >
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mb-1 text-primary group-hover:bg-primary/20 transition-colors">
-                {link.favicon ? (
-                  <img 
-                    src={link.favicon} 
-                    alt={link.title} 
-                    className="w-5 h-5 rounded-full object-contain" 
-                    onError={(e) => {
-                      e.currentTarget.src = ""; 
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.parentElement!.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>';
-                    }}
-                  />
-                ) : (
-                  <LinkIcon className="h-4 w-4" />
-                )}
-              </div>
-              <span className="text-xs font-medium text-center line-clamp-1">{link.title}</span>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  removeQuickLink(link.id);
-                }}
-                className="absolute top-0 right-0 w-5 h-5 rounded-full bg-background/80 text-foreground/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+          {loading && quickLinks.length === 0 ? (
+            <div className="col-span-3 flex justify-center items-center py-4">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              <span className="ml-2 text-sm text-muted-foreground">Loading links...</span>
+            </div>
+          ) : quickLinks.length === 0 ? (
+            <div className="col-span-3 text-center py-4 text-sm text-muted-foreground">
+              {user ? "No quick links yet. Add some!" : "Sign in to add quick links"}
+            </div>
+          ) : (
+            quickLinks.map((link) => (
+              <a
+                key={link.id}
+                href={link.url.startsWith("http") ? link.url : `https://${link.url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center justify-center p-2 rounded-md bg-background/60 hover:bg-primary/5 border border-border/30 transition-all duration-200 group relative"
               >
-                <X className="h-3 w-3" />
-              </button>
-            </a>
-          ))}
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mb-1 text-primary group-hover:bg-primary/20 transition-colors">
+                  {link.favicon ? (
+                    <img 
+                      src={link.favicon} 
+                      alt={link.title} 
+                      className="w-5 h-5 rounded-full object-contain" 
+                      onError={(e) => {
+                        e.currentTarget.src = ""; 
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.parentElement!.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>';
+                      }}
+                    />
+                  ) : (
+                    <LinkIcon className="h-4 w-4" />
+                  )}
+                </div>
+                <span className="text-xs font-medium text-center line-clamp-1">{link.title}</span>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    removeQuickLink(link.id);
+                  }}
+                  className="absolute top-0 right-0 w-5 h-5 rounded-full bg-background/80 text-foreground/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                  disabled={loading}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </a>
+            ))
+          )}
         </div>
       </div>
 
@@ -335,15 +439,17 @@ const LeftPanel = ({
               variant="outline"
               onClick={() => setIsAddLinkOpen(false)}
               className="border-border/40"
+              disabled={loading}
             >
               Cancel
             </Button>
             <Button
               onClick={addQuickLink}
-              disabled={!newLink.title || !newLink.url}
+              disabled={!newLink.title || !newLink.url || loading}
               className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              Add Link
+              {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              {loading ? "Adding..." : "Add Link"}
             </Button>
           </DialogFooter>
         </DialogContent>
