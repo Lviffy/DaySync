@@ -18,13 +18,14 @@ export function CustomSeparator({
       )}
       {...props}
     >
-      <div className="h-px flex-1 bg-border/50" />
+      {/* Using a darker border for better visibility */}
+      <div className="h-px flex-1 bg-border/80" />
       {label && (
         <div className="px-2 text-xs font-medium text-muted-foreground">
           {label}
         </div>
       )}
-      <div className="h-px flex-1 bg-border/50" />
+      <div className="h-px flex-1 bg-border/80" />
     </div>
   );
 }

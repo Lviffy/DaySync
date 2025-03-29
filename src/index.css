@@ -24,14 +24,9 @@
     --muted: 221 24% 94%;
     --muted-foreground: 220 15% 40%;
 
-    --accent: 221 70% 96%;
-    --accent-foreground: 222 47% 12%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 220 20% 90%;
-    --input: 220 20% 90%;
+    /* Darker border color for better visibility in light mode */
+    --border: 220 20% 75%;
+    --input: 220 20% 75%;
     --ring: 221 83% 54%;
 
     --radius: 0.75rem;

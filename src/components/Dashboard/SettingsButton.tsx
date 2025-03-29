@@ -45,7 +45,7 @@ const SettingsButton = ({ darkMode, setDarkMode }: SettingsButtonProps) => {
               variant="outline"
               size="icon"
               onClick={() => setIsOpen(true)}
-              className="rounded-full w-10 h-10 border-border/40 bg-background/70 hover:bg-accent/70 backdrop-blur-sm"
+              className="rounded-full w-10 h-10 border-border/70 bg-background/70 hover:bg-accent/70 backdrop-blur-sm"
               aria-label="Settings"
             >
               <Settings className="h-5 w-5" />
@@ -58,12 +58,12 @@ const SettingsButton = ({ darkMode, setDarkMode }: SettingsButtonProps) => {
       </TooltipProvider>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="bg-background border-border/50 max-w-md">
+        <DialogContent className="bg-background border-2 border-border/70 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">Settings</DialogTitle>
           </DialogHeader>
           <div className="py-6 space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between py-2 border-b border-border/60">
               <div className="space-y-0.5 flex items-center">
                 {darkMode ? (
                   <Moon className="mr-2.5 h-4.5 w-4.5 text-primary" />
@@ -80,7 +80,7 @@ const SettingsButton = ({ darkMode, setDarkMode }: SettingsButtonProps) => {
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between py-2 border-b border-border/60">
               <div className="space-y-0.5">
                 <Label htmlFor="notifications" className="text-base">Notifications</Label>
                 <p className="text-sm text-muted-foreground">
@@ -95,7 +95,7 @@ const SettingsButton = ({ darkMode, setDarkMode }: SettingsButtonProps) => {
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between py-2">
               <div className="space-y-0.5">
                 <Label htmlFor="sound" className="text-base">Sound Effects</Label>
                 <p className="text-sm text-muted-foreground">
@@ -110,7 +110,7 @@ const SettingsButton = ({ darkMode, setDarkMode }: SettingsButtonProps) => {
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="border-t border-border/60 pt-4">
             <Button onClick={() => setIsOpen(false)} className="bg-primary hover:bg-primary/90">
               Save Settings
             </Button>
