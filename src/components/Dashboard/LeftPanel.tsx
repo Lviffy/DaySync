@@ -292,7 +292,7 @@ const LeftPanel = ({
   return (
     <div
       className={cn(
-        "w-full h-full p-3 md:p-5 flex flex-col gap-4 md:gap-6 overflow-auto",
+        "w-full h-full p-0 md:p-2 flex flex-col gap-4 md:gap-6 overflow-auto",
         className,
       )}
     >

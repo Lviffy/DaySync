@@ -74,8 +74,8 @@ const DashboardLayout = ({ className = "" }: DashboardLayoutProps) => {
 
         {/* Main Dashboard Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 h-[calc(100vh-120px)]">
-          {/* Left Panel */}
-          <div className="md:col-span-3 border border-border/40 rounded-xl overflow-hidden shadow-sm bg-card/50 backdrop-blur-sm transition-all duration-200 hover:shadow-md">
+          {/* Left Panel - Removed border, shadow, and background */}
+          <div className="md:col-span-3 overflow-hidden">
             <LeftPanel initialLinks={[]} />
           </div>
 
@@ -84,8 +84,8 @@ const DashboardLayout = ({ className = "" }: DashboardLayoutProps) => {
             <CentralSection />
           </div>
 
-          {/* Right Panel */}
-          <div className="md:col-span-3 border border-border/40 rounded-xl overflow-hidden shadow-sm bg-card/50 backdrop-blur-sm transition-all duration-200 hover:shadow-md">
+          {/* Right Panel - Removed border, shadow, and background */}
+          <div className="md:col-span-3 overflow-hidden">
             <RightPanel />
           </div>
         </div>

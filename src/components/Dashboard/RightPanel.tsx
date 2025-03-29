@@ -300,7 +300,7 @@ const RightPanel = () => {
   };
 
   return (
-    <div className="w-full h-full p-3 md:p-5 bg-background/50 flex flex-col gap-4 md:gap-6 overflow-auto">
+    <div className="w-full h-full p-0 md:p-2 flex flex-col gap-4 md:gap-6 overflow-auto">
       {/* Toast notification */}
       {toast.show && (
         <div className={`fixed top-4 right-4 z-50 px-4 py-2 rounded shadow-md ${
@@ -311,7 +311,7 @@ const RightPanel = () => {
       )}
       
       {/* Monthly To-Do Section */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 p-4 bg-background/80 rounded-lg shadow-sm border border-border/30 transition-all duration-200 hover:shadow-md">
         <div className="flex items-center justify-between">
           <h2 className="text-base md:text-lg font-medium text-foreground/90 flex items-center">
             <ListTodo className="h-4 w-4 mr-2 text-primary" />Monthly Tasks
@@ -352,7 +352,7 @@ const RightPanel = () => {
       </div>
 
       {/* Daily To-Do Section */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 p-4 bg-background/80 rounded-lg shadow-sm border border-border/30 transition-all duration-200 hover:shadow-md">
         <div className="flex items-center justify-between">
           <h2 className="text-base md:text-lg font-medium text-foreground/90 flex items-center">
             <ListTodo className="h-4 w-4 mr-2 text-primary" />Daily Tasks
