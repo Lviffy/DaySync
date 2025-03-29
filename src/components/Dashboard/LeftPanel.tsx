@@ -330,7 +330,7 @@ const LeftPanel = ({
       {/* Quick Links */}
       <div className="p-4 bg-background/80 rounded-lg shadow-sm border border-border/30 flex-1 transition-all duration-200 hover:shadow-md">
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-base md:text-lg font-medium text-foreground/90">Quick Links</h2>
+          <h2 className="text-base md:text-lg font-medium text-foreground/90">Favorites</h2>
           <Button
             variant="ghost"
             size="sm"

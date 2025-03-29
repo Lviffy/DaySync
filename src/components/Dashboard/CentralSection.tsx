@@ -51,7 +51,7 @@ const CentralSection = ({ className }: CentralSectionProps) => {
       )}
     >
       {/* Digital Clock - changed to black and white */}
-      <div className="mb-8 md:mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500 -mt-[20px]">
+      <div className="mb-8 md:mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500 -mt-[60px]">
         <h1 className="text-6xl md:text-8xl lg:text-9xl font-light tracking-tight text-foreground dark:text-white">{time}</h1>
       </div>
 
