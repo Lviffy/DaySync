@@ -19,7 +19,7 @@ import {
 
 interface SettingsButtonProps {
   darkMode: boolean;
-  setDarkMode: (darkMode: boolean) => void;
+  setDarkMode: (value: boolean) => void;
 }
 
 const SettingsButton = ({ darkMode, setDarkMode }: SettingsButtonProps) => {

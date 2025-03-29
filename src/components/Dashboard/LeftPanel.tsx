@@ -151,13 +151,21 @@ const LeftPanel = ({
     }
   };
 
-  // Get favicon URL
-  const getFaviconUrl = (url: string) => {
+  // Get favicon URL from domain
+  const getFaviconUrl = (url: string): string => {
     try {
-      const domain = getDomain(url);
+      const domain = new URL(url).hostname;
       return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
     } catch (e) {
-      return null;
+      // If URL parsing fails, try with added protocol
+      try {
+        const urlWithProtocol = url.startsWith('http') ? url : `https://${url}`;
+        const domain = new URL(urlWithProtocol).hostname;
+        return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+      } catch {
+        // Default favicon if all else fails
+        return 'https://www.google.com/s2/favicons?domain=example.com&sz=64';
+      }
     }
   };
 
@@ -253,7 +261,20 @@ const LeftPanel = ({
               className="flex flex-col items-center justify-center p-2 rounded-md bg-background/60 hover:bg-primary/5 border border-border/30 transition-all duration-200 group"
             >
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mb-1 text-primary group-hover:bg-primary/20 transition-colors">
-                <LinkIcon className="h-4 w-4" />
+                {link.favicon ? (
+                  <img 
+                    src={link.favicon} 
+                    alt={link.title} 
+                    className="w-5 h-5 rounded-full object-contain" 
+                    onError={(e) => {
+                      e.currentTarget.src = ""; 
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.parentElement!.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>';
+                    }}
+                  />
+                ) : (
+                  <LinkIcon className="h-4 w-4" />
+                )}
               </div>
               <span className="text-xs font-medium text-center line-clamp-1">{link.title}</span>
               <button

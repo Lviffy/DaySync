@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { Moon, Sun } from "lucide-react";
 import LeftPanel from "./LeftPanel";
 import CentralSection from "./CentralSection";
 import RightPanel from "./RightPanel";
-import SettingsButton from "./SettingsButton";
 import SignUpButton from "../Auth/SignUpButton";
+import { Switch } from "@/components/ui/switch";
 
 interface DashboardLayoutProps {
   className?: string;
 }
 
 const DashboardLayout = ({ className = "" }: DashboardLayoutProps) => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
 
   // Apply dark mode class to document
   useEffect(() => {
@@ -24,10 +25,18 @@ const DashboardLayout = ({ className = "" }: DashboardLayoutProps) => {
   return (
     <div className={`min-h-screen bg-background text-foreground transition-colors duration-300 ${className}`}>
       <div className="w-full px-3 py-4 md:px-6 md:py-8 max-w-[1920px] mx-auto">
-        {/* Header with Settings and Sign Up */}
+        {/* Header with Sign Up and Dark Mode Toggle */}
         <div className="flex justify-end items-center gap-3 mb-6">
+          <div className="flex items-center gap-2">
+            <Sun className="h-4 w-4 text-muted-foreground" />
+            <Switch 
+              checked={darkMode}
+              onCheckedChange={setDarkMode}
+              className="data-[state=checked]:bg-primary"
+            />
+            <Moon className="h-4 w-4 text-muted-foreground" />
+          </div>
           <SignUpButton />
-          <SettingsButton darkMode={darkMode} setDarkMode={setDarkMode} />
         </div>
 
         {/* Main Dashboard Grid */}
@@ -38,7 +47,7 @@ const DashboardLayout = ({ className = "" }: DashboardLayoutProps) => {
           </div>
 
           {/* Central Section */}
-          <div className="md:col-span-6 flex items-center justify-center rounded-xl border border-border/20 bg-card/30 backdrop-blur-sm shadow-sm transition-all duration-200 hover:shadow-md">
+          <div className="md:col-span-6 flex items-center justify-center">
             <CentralSection />
           </div>
 

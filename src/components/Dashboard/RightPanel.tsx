@@ -70,12 +70,13 @@ const RightPanel = ({
   };
 
   // Delete tasks
-  const deleteMonthlyTask = (id: string) => {
-    setMonthlyTasksState(monthlyTasksState.filter((task) => task.id !== id));
-  };
-
-  const deleteDailyTask = (id: string) => {
-    setDailyTasksState(dailyTasksState.filter((task) => task.id !== id));
+  const deleteTask = (id: string) => {
+    // Check if it's a monthly task (starts with 'm')
+    if (id.startsWith("m")) {
+      setMonthlyTasksState(monthlyTasksState.filter(task => task.id !== id));
+    } else {
+      setDailyTasksState(dailyTasksState.filter(task => task.id !== id));
+    }
   };
 
   // Edit tasks
