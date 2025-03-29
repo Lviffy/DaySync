@@ -148,12 +148,20 @@ const LeftPanel = ({
         day === currentDate.getDate() &&
         viewMonth === currentDate.getMonth() &&
         viewYear === currentDate.getFullYear();
+      
+      // Check if date has passed
+      const isPastDate = 
+        (viewYear < currentDate.getFullYear()) || 
+        (viewYear === currentDate.getFullYear() && viewMonth < currentDate.getMonth()) || 
+        (viewYear === currentDate.getFullYear() && viewMonth === currentDate.getMonth() && day < currentDate.getDate());
+      
       days.push(
         <div
           key={`day-${viewMonth}-${day}`}
           className={cn(
             "h-7 w-7 flex items-center justify-center text-xs rounded-full hover:bg-muted/60 cursor-pointer transition-colors",
             isToday && "bg-primary text-primary-foreground hover:bg-primary/90",
+            isPastDate && "line-through text-muted-foreground"
           )}
         >
           {day}
