@@ -17,6 +17,7 @@
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   --border-color: rgba(0, 0, 0, 0.2); /* Darker border color for better visibility */
   --transition: all 0.2s ease;
+  --font-clock: 'Roboto Mono', monospace;
 }
 
 * {
@@ -850,4 +851,38 @@ label {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+/* Clock styles */
+.clock {
+  font-family: var(--font-clock);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.clock-large {
+  font-size: 2.5rem;
+}
+
+.clock-medium {
+  font-size: 1.75rem;
+}
+
+.clock-small {
+  font-size: 1.25rem;
+}
+
+/* For digital clock displays */
+.digital-clock {
+  font-family: var(--font-clock);
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.25rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  font-weight: 500;
 }

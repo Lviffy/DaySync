@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+/* Adding a nice font for the clock - Roboto Mono is clean and readable for numbers */
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -94,4 +96,11 @@ a, button, input, select, textarea {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+}
+
+/* Add a utility class for the clock font */
+.font-clock {
+  font-family: "Roboto Mono", monospace;
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
 }
