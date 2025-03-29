@@ -78,10 +78,17 @@ export function UserProvider({ children }) {
 
   const signInWithGoogle = async () => {
     try {
+      // Get the current domain URL - ensure it's the deployed one when in production
+      const redirectUrl = window.location.hostname === 'localhost' 
+        ? `${window.location.origin}/auth/callback`
+        : 'https://day-sync.vercel.app/auth/callback';
+      
+      console.log('Using redirect URL:', redirectUrl);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({ 
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent'
@@ -125,4 +132,4 @@ export function UserProvider({ children }) {
   );
 }
 
-export const useUser = () => useContext(UserContext); 
+export const useUser = () => useContext(UserContext);

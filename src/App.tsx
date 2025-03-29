@@ -9,27 +9,16 @@ import routes from "tempo-routes";
 import { StrictModeDisabler } from './components/utils/StrictModeDisabler';
 
 function App() {
-  // Initialize dark mode as true by default
-  const [darkMode, setDarkMode] = useState(true);
-  
-  // Apply dark mode class when component mounts and when darkMode state changes
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-  }, [darkMode]);
-
   return (
     <UserProvider>
-      <Suspense fallback={<p>Loading...</p>}>
-        <div className="app-container">
-          <StrictModeDisabler>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Auth />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-            </Routes>
-            {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
-          </StrictModeDisabler>
-        </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          {/* Make sure this exists */}
+          {routes}
+        </Routes>
       </Suspense>
     </UserProvider>
   );

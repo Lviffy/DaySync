@@ -22,7 +22,8 @@ export default function AuthCallback() {
           setMessage('Authentication successful! Redirecting...');
           // Redirect to the main page after successful authentication
           setTimeout(() => {
-            window.location.href = '/';
+            // Use current domain origin to ensure proper redirection
+            window.location.href = window.location.origin;
           }, 1500);
         }
       } catch (err) {
@@ -42,4 +43,4 @@ export default function AuthCallback() {
       </div>
     </div>
   );
-} 
+}
