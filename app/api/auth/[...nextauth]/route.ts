@@ -2,6 +2,10 @@ import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { NextAuthOptions } from 'next-auth';
 
+// This ensures the app works on Vercel even without setting NEXTAUTH_URL
+const NEXTAUTH_URL = process.env.NEXTAUTH_URL || 
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
 // When deploying to Vercel, the VERCEL_URL environment variable will be set
 const useSecureCookies = process.env.VERCEL_URL || process.env.VERCEL;
 const cookiePrefix = useSecureCookies ? '__Secure-' : '';
