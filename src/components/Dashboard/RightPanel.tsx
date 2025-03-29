@@ -314,7 +314,7 @@ const RightPanel = () => {
       <div className="flex flex-col gap-3 p-4 bg-background/80 rounded-lg shadow-sm border border-border/30 transition-all duration-200 hover:shadow-md">
         <div className="flex items-center justify-between">
           <h2 className="text-base md:text-lg font-medium text-foreground/90 flex items-center">
-            <ListTodo className="h-4 w-4 mr-2 text-primary" />Monthly Tasks
+            <ListTodo className="h-4 w-4 mr-2 text-primary" />Monthly Goal
           </h2>
           <div className="flex items-center gap-1">
             <Input
